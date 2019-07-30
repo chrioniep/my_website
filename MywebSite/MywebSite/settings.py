@@ -23,9 +23,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '@$ywljn@_=fj1b!7lh)#@-ye^161hg(1$3$hyu29rpm2^q^cki'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+if os.environ.get('ENV') == 'PRODUCTION':
+    DEBUG = False
+else:
+    DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['crioni.herokuapp.com']
 
 
 # Application definition
@@ -49,6 +52,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware'
 ]
 
 ROOT_URLCONF = 'MywebSite.urls'
@@ -121,7 +125,23 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 MEDIA_URL  = '/media/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-VENV_PATH = os.path.dirname(BASE_DIR)
-STATIC_ROOT = os.path.join(VENV_PATH, 'static_root')
-MEDIA_ROOT = os.path.join(VENV_PATH, 'media_root')
+
+if os.environ.get('ENV') == 'PRODUCTION':
+
+    STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+    VENV_PATH = os.path.dirname(BASE_DIR)
+    STATIC_ROOT = os.path.join(VENV_PATH, 'static_root')
+    MEDIA_ROOT = os.path.join(VENV_PATH, 'media_root')
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    db_from_env = dj_database_url.config(conn_max_age=500)
+    DATABASES['default'].update(db_from_env)
+
+
+# Gmail smtp Configuration
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'eponde26@gmail.com'
+EMAIL_HOST_PASSWORD = 'okapyababili'
+
