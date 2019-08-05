@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
-
+import django_heroku
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -23,12 +23,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '@$ywljn@_=fj1b!7lh)#@-ye^161hg(1$3$hyu29rpm2^q^cki'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-if os.environ.get('ENV') == 'PRODUCTION':
-    DEBUG = False
-else:
-    DEBUG = True
 
-ALLOWED_HOSTS = ['crioni.herokuapp.com']
+DEBUG = True
+
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -81,8 +79,12 @@ WSGI_APPLICATION = 'MywebSite.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'crioni_db',
+        'USER':'postgres',
+        'PASSWORD':'okapyababili',
+        'HOST':'127.0.0.1',
+        'PORT':'5432'
     }
 }
 
@@ -126,16 +128,15 @@ USE_TZ = True
 STATIC_URL = '/static/'
 MEDIA_URL  = '/media/'
 
-if os.environ.get('ENV') == 'PRODUCTION':
 
-    STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-    VENV_PATH = os.path.dirname(BASE_DIR)
-    STATIC_ROOT = os.path.join(VENV_PATH, 'static_root')
-    MEDIA_ROOT = os.path.join(VENV_PATH, 'media_root')
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-    db_from_env = dj_database_url.config(conn_max_age=500)
-    DATABASES['default'].update(db_from_env)
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+VENV_PATH = os.path.dirname(BASE_DIR)
+STATIC_ROOT = os.path.join(VENV_PATH, 'static_root')
+MEDIA_ROOT = os.path.join(VENV_PATH, 'media_root')
 
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# db_from_env = dj_database_url.config(conn_max_age=500)
+# DATABASES['default'].update(db_from_env)
 
 # Gmail smtp Configuration
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -144,4 +145,6 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'eponde26@gmail.com'
 EMAIL_HOST_PASSWORD = 'okapyababili'
+
+django_heroku.settings(locals())
 
